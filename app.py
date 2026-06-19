@@ -12,7 +12,7 @@ import json
 #  CONFIG — your OpenRouter key is already set here
 # ══════════════════════════════════════════════════════════════════
 
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 OPENROUTER_URL     = "https://openrouter.ai/api/v1/chat/completions"
 
 MODELS = {
