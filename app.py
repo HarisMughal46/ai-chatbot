@@ -241,12 +241,7 @@ for msg in st.session_state.messages:
 # ══════════════════════════════════════════════════════════════════
 
 def ask_openrouter(messages: list, model: str, system_prompt: str) -> tuple[str, int]:
-    """
-    Send messages to OpenRouter and return (reply_text, tokens_used).
-    Raises an exception on failure.
-    """
     full_messages = [{"role": "system", "content": system_prompt}] + messages
-
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type":  "application/json",
@@ -259,19 +254,27 @@ def ask_openrouter(messages: list, model: str, system_prompt: str) -> tuple[str,
         "temperature": 0.7,
         "max_tokens":  2048,
     }
-
-    resp = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=60)
+    try:
+        resp = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=60)
+    except requests.exceptions.Timeout:
+        raise Exception("Request timed out. Try again.")
+    except requests.exceptions.ConnectionError:
+        raise Exception("Cannot connect to OpenRouter. Check internet.")
 
     if resp.status_code != 200:
         try:
-            err = resp.json().get("error", {}).get("message", resp.text)
+            err_json = resp.json()
+            err_msg  = err_json.get("error", {}).get("message", str(err_json))
         except Exception:
-            err = resp.text
-        raise Exception(f"OpenRouter error {resp.status_code}: {err}")
+            err_msg = resp.text
+        raise Exception(f"Status {resp.status_code}: {err_msg} — Your API key may be revoked. Go to openrouter.ai to generate a new one, then update Streamlit Secrets.")
 
-    data         = resp.json()
-    reply        = data["choices"][0]["message"]["content"]
-    tokens_used  = data.get("usage", {}).get("total_tokens", 0)
+    data = resp.json()
+    if "choices" not in data or len(data["choices"]) == 0:
+        raise Exception(f"Unexpected response: {data}")
+
+    reply       = data["choices"][0]["message"]["content"]
+    tokens_used = data.get("usage", {}).get("total_tokens", 0)
     return reply, tokens_used
 
 # ══════════════════════════════════════════════════════════════════
