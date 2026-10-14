@@ -1,20 +1,21 @@
 """OpenRouter client helpers (kept free of Streamlit so they are easy to test)."""
 
 import json
+import os
 from collections.abc import Iterator
 
 import requests
 
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_URL = os.environ.get("OPENROUTER_URL", "https://openrouter.ai/api/v1/chat/completions")
 
 # Verified against https://openrouter.ai/api/v1/models on 2026-10-14.
 MODELS = {
-    "GPT-4o Mini ⚡ (Fast)": "openai/gpt-4o-mini",
-    "GPT-4o 🧠 (Capable)": "openai/gpt-4o",
-    "Claude Sonnet 4.5 🎯": "anthropic/claude-sonnet-4.5",
-    "Gemini 2.5 Flash ✨": "google/gemini-2.5-flash",
-    "Gemma 4 31B 🆓 (Free)": "google/gemma-4-31b-it:free",
-    "OpenRouter Free Router 🆓": "openrouter/free",
+    "GPT-4o mini": "openai/gpt-4o-mini",
+    "GPT-4o": "openai/gpt-4o",
+    "Claude Sonnet 4.5": "anthropic/claude-sonnet-4.5",
+    "Gemini 2.5 Flash": "google/gemini-2.5-flash",
+    "Gemma 4 31B · Free": "google/gemma-4-31b-it:free",
+    "Auto (free models)": "openrouter/free",
 }
 
 MAX_HISTORY_MESSAGES = 20
@@ -69,7 +70,7 @@ def stream_chat(
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://streamlit.io",
-        "X-Title": "AI Chatbot",
+        "X-Title": "Lumen",
     }
     try:
         resp = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=60, stream=True)

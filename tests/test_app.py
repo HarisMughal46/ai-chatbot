@@ -129,7 +129,7 @@ def test_sidebar_controls_flow_into_request():
     with mock.patch("chat_api.requests.post", return_value=_ok("ok")) as p:
         at = make_app()
         at.run()
-        at.sidebar.selectbox(key="selected_model").set_value("Gemma 4 31B 🆓 (Free)").run()
+        at.sidebar.selectbox(key="selected_model").set_value("Gemma 4 31B · Free").run()
         at.sidebar.selectbox(key="persona").set_value("Senior software engineer").run()
         at.sidebar.slider(key="max_tokens").set_value(512).run()
         at.sidebar.slider(key="temperature").set_value(0.2).run()
@@ -158,7 +158,7 @@ def test_regenerate_and_clear():
         at.button(key="regen_btn").click().run()
     assert not at.exception
     assert [m["content"] for m in at.session_state.messages] == ["q", "second"]
-    at.sidebar.button(key="clear_btn").click().run()
+    at.button(key="clear_btn").click().run()
     assert at.session_state.messages == [] and at.session_state.total_tokens == 0
 
 

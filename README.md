@@ -1,6 +1,6 @@
-# AI Chatbot
+# ✦ Lumen
 
-A Streamlit chat app that talks to many LLMs through [OpenRouter](https://openrouter.ai), with streaming replies,
+**Lumen** is a clean, multi-model AI chat. It is a Streamlit chat app that talks to many LLMs through [OpenRouter](https://openrouter.ai), with streaming replies,
 a model picker (including free models), an editable system prompt and a max-reply-tokens slider.
 
 ## Required secret
@@ -30,6 +30,14 @@ Open http://localhost:8501.
 3. **Advanced settings → Secrets**, paste: `OPENROUTER_API_KEY = "your-key-here"`.
 4. Deploy. (Dependencies come from `requirements.txt`; `streamlit_requirements.txt` is kept identical for older configs.)
 
+## Local UI testing without a key
+
+Set `OPENROUTER_URL` to point at a mock OpenAI-compatible SSE server (any dummy key works):
+
+```bash
+OPENROUTER_URL=http://127.0.0.1:8611/ streamlit run app.py
+```
+
 ## Tests
 
 ```bash
@@ -41,6 +49,6 @@ Tests mock OpenRouter, so no key or network is needed.
 
 ## Files
 
-- `app.py` – Streamlit UI
+- `app.py` – Streamlit UI (theme in `.streamlit/config.toml`, styles in `assets/style.css`)
 - `chat_api.py` – OpenRouter streaming client, model list, history cap
 - `tests/` – pytest suite
